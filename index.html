@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<title>AI Navigator Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#c4aa88;min-height:100vh}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#04041a 0%,#0b0b3a 40%,#0a1840 70%,#060c28 100%);
+  padding:36px 36px 36px 36px;
+  display:flex;align-items:center;gap:24px;
+  min-height:340px;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;top:-80px;right:100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,#1a44ff18 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-left{flex:1;min-width:240px;z-index:2;position:relative}
+.hero-title{font-size:38px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-1px;margin-bottom:5px}
+.hero-title .g{background:linear-gradient(90deg,#00d4ff,#7755ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.designer{font-size:11px;color:#6688bb;font-style:italic;margin-bottom:16px;letter-spacing:.2px}
+.tagline{font-size:16px;color:#b8ccee;line-height:1.55;margin-bottom:8px}
+.tagline .g{background:linear-gradient(90deg,#00d4ff,#8866ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600}
+.hero-desc{font-size:12.5px;color:#6688aa;line-height:1.65;margin-bottom:20px;max-width:380px}
+.feats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:26px}
+.feat{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:58px}
+.feat i{font-size:22px;color:#4499ff}
+.feat span{font-size:10.5px;color:#7a99bb;text-align:center;line-height:1.35}
+.hero-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 26px;background:linear-gradient(135deg,#3355ff,#8844ff);
+  border:none;border-radius:30px;color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;transition:opacity .2s,transform .15s;font-family:inherit;
+}
+.hero-btn:hover{opacity:.88;transform:scale(1.03)}
+
+/* Compass area */
+.hero-right{position:relative;width:340px;height:300px;flex-shrink:0;z-index:2}
+.cmp-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.orbit-item{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.orbit-logo{
+  width:42px;height:42px;border-radius:50%;
+  background:#0c1840;border:2px solid #2244aa;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+}
+.orbit-logo .oi{position:absolute;font-size:10px;font-weight:700;color:#6699ee;z-index:1}
+.orbit-logo img{
+  position:absolute;width:26px;height:26px;
+  object-fit:contain;border-radius:4px;z-index:2;
+}
+.orbit-name{font-size:10px;color:#7a99cc;white-space:nowrap}
+
+/* ── APP LAYOUT ── */
+.app-body{display:flex;min-height:520px}
+
+/* SIDEBAR */
+.sidebar{
+  width:168px;flex-shrink:0;
+  background:#0a1428;border-right:1px solid #1a2a40;
+  display:flex;flex-direction:column;padding:10px 0 14px;
+}
+.sb-label{font-size:10px;font-weight:600;color:#2a4060;
+  letter-spacing:.8px;text-transform:uppercase;padding:10px 16px 6px}
+.sb-tab{
+  width:100%;padding:9px 16px;
+  border:none;border-left:3px solid transparent;
+  background:transparent;color:#4a6080;
+  font-size:12px;font-weight:500;cursor:pointer;
+  display:flex;align-items:center;gap:9px;text-align:left;
+  transition:all .18s;font-family:inherit;white-space:nowrap;
+}
+.sb-tab:hover{color:#c0d4f0;background:#111f35}
+.sb-tab.active{color:var(--tc);border-left-color:var(--tc);background:#111f35}
+.sb-tab i{font-size:14px;flex-shrink:0}
+.sb-spacer{flex:1}
+.sb-chat{
+  margin:0 10px;padding:9px 12px;
+  background:#111f35;border:1px solid #1e3050;
+  border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  color:#818cf8;font-size:12px;font-weight:500;
+  transition:all .18s;font-family:inherit;
+}
+.sb-chat:hover{background:#182840;color:#a5b4fc}
+.sb-chat i{font-size:15px}
+
+/* MAIN */
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0}
+.content{padding:18px 20px;background:#c4aa88}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.card{
+  background:#111828;border:1px solid #1e2d45;
+  border-radius:14px;padding:14px 10px 12px;
+  text-decoration:none;display:flex;flex-direction:column;
+  align-items:center;gap:8px;cursor:pointer;
+  transition:border-color .2s,transform .2s,background .2s;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  transition:opacity .2s;
+  background:radial-gradient(circle at 50% 0%,var(--c,#6366f1)20,transparent 70%);
+}
+.card:hover{transform:translateY(-3px);background:#17203a}
+.card:hover::before{opacity:.08}
+.badge{
+  width:54px;height:54px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;letter-spacing:.5px;
+  flex-shrink:0;position:relative;overflow:hidden;
+}
+.badge img{
+  width:100%;height:100%;object-fit:contain;
+  border-radius:11px;position:absolute;top:0;left:0;
+  padding:6px;background:rgba(255,255,255,.07);
+}
+.badge .init{position:relative;z-index:1;font-size:14px}
+.card-name{font-size:12px;font-weight:600;color:#e2e8f0;text-align:center;line-height:1.3}
+.card-desc{font-size:10.5px;color:#64748b;text-align:center;line-height:1.4}
+.sec-hdr{
+  font-size:11.5px;font-weight:600;color:#7a6040;
+  margin:18px 0 10px;padding-bottom:8px;
+  border-bottom:1px solid #b09a7044;
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:.3px;text-transform:uppercase;
+}
+.sec-hdr:first-child{margin-top:0}
+
+/* CHAT */
+.chat-section{
+  margin:0 20px 24px;border:1px solid #1e2d45;
+  border-radius:16px;overflow:hidden;display:none;
+  animation:sIn .25s ease;
+}
+@keyframes sIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.chat-head{
+  padding:11px 16px;background:#0f1520;
+  border-bottom:1px solid #1e2d45;
+  display:flex;align-items:center;gap:12px;
+}
+.ch-info h3{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:1px}
+.ch-info p{font-size:11px;color:#64748b;display:flex;align-items:center;gap:4px}
+.gdot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.msgs{height:270px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:9px;background:#111828;scroll-behavior:smooth}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:#2d3a55;border-radius:3px}
+.msg{max-width:84%;padding:9px 13px;border-radius:13px;font-size:13px;line-height:1.55;word-break:break-word}
+.msg.a{align-self:flex-start;background:#1a2540;color:#e2e8f0;border-bottom-left-radius:3px}
+.msg.u{align-self:flex-end;background:linear-gradient(135deg,#5555ee,#8844dd);color:#fff;border-bottom-right-radius:3px}
+.msg.t{align-self:flex-start;background:#1a2540;color:#64748b;font-style:italic;font-size:12px;display:flex;align-items:center;gap:7px}
+.dots{display:flex;gap:3px}
+.dots span{width:5px;height:5px;border-radius:50%;background:#6366f1;animation:bns .8s infinite}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bns{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+.chat-in{padding:10px 13px;border-top:1px solid #1e2d45;display:flex;gap:7px;align-items:center;background:#0f1520}
+.chat-in input{
+  flex:1;padding:8px 15px;background:#1a2540;
+  border:1px solid #2d3a55;border-radius:20px;
+  color:#e2e8f0;font-size:13px;outline:none;
+  font-family:inherit;transition:border-color .2s;
+}
+.chat-in input:focus{border-color:#6366f1}
+.chat-in input::placeholder{color:#3a4f6a}
+.snd{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#5555ee,#8844dd);
+  border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;transition:opacity .2s,transform .1s;
+}
+.snd:hover{opacity:.88;transform:scale(1.06)}
+.snd:disabled{opacity:.38;cursor:default;transform:none}
+.snd i{color:white;font-size:15px}
+</style>
+</head>
+<body>
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden" aria-hidden="true"></h2>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <h1 class="hero-title"><span class="g">AI</span> Navigator Hub</h1>
+    <p class="designer">Diseñado por el Prof. Mario M. Figueroa de la Cruz</p>
+    <p class="tagline">Tu navegador multi servicios con<br><span class="g">inteligencia artificial.</span></p>
+    <p class="hero-desc">Accedé, explorá y aprovechá los mejores servicios de IA desde un solo lugar. Más productividad, más creatividad, mejores resultados.</p>
+    <div class="feats">
+      <div class="feat"><i class="ti ti-compass" aria-hidden="true"></i><span>Explorá<br>múltiples IA</span></div>
+      <div class="feat"><i class="ti ti-layout-grid" aria-hidden="true"></i><span>Todo en<br>un lugar</span></div>
+      <div class="feat"><i class="ti ti-bolt" aria-hidden="true"></i><span>Ahorrá<br>tiempo</span></div>
+      <div class="feat"><i class="ti ti-shield" aria-hidden="true"></i><span>Seguro y<br>confiable</span></div>
+    </div>
+    <button class="hero-btn" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">
+      <i class="ti ti-compass" aria-hidden="true"></i> Comienza a navegar
+    </button>
+  </div>
+
+  <!-- COMPASS + ORBITS -->
+  <div class="hero-right" id="hero-right">
+    <div class="cmp-wrap">
+      <svg viewBox="0 0 260 260" width="218" height="218" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#1a3a9f"/>
+            <stop offset="100%" stop-color="#050c28"/>
+          </radialGradient>
+          <linearGradient id="ng" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00e5ff"/><stop offset="100%" stop-color="#0055ff"/>
+          </linearGradient>
+          <linearGradient id="sg" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#cc44ff"/><stop offset="100%" stop-color="#6633ff"/>
+          </linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <circle cx="130" cy="130" r="124" fill="none" stroke="#1e3a90" stroke-width="1.5" opacity=".6"/>
+        <circle cx="130" cy="130" r="117" fill="none" stroke="#1a3070" stroke-width=".5" opacity=".3"/>
+        <circle cx="130" cy="130" r="110" fill="url(#bg)" stroke="#2050c0" stroke-width="1"/>
+        <polygon points="130,22 123,130 130,120 137,130" fill="url(#ng)" filter="url(#glow)"/>
+        <polygon points="130,238 123,130 130,140 137,130" fill="url(#sg)" filter="url(#glow)"/>
+        <polygon points="238,130 130,123 140,130 130,137" fill="#2255ee" opacity=".85"/>
+        <polygon points="22,130 130,123 120,130 130,137" fill="#2255ee" opacity=".85"/>
+        <polygon points="219,42 130,123 123,130" fill="#6633bb" opacity=".55"/>
+        <polygon points="219,219 130,137 123,130" fill="#6633bb" opacity=".55"/>
+        <polygon points="42,219 130,137 137,130" fill="#6633bb" opacity=".55"/>
+        <polygon points="42,42 130,123 137,130" fill="#6633bb" opacity=".55"/>
+        <circle cx="130" cy="130" r="35" fill="#070f2e" stroke="#3377ff" stroke-width="1.5"/>
+        <circle cx="130" cy="130" r="30" fill="none" stroke="#1a44bb" stroke-width=".5" opacity=".5"/>
+        <text x="130" y="138" text-anchor="middle" fill="#00e5ff" font-size="22" font-weight="bold" font-family="system-ui">AI</text>
+        <circle cx="130" cy="130" r="37" fill="none" stroke="#3388ff" stroke-width="2" opacity=".3" filter="url(#glow)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<div class="app-body" id="app">
+  <aside class="sidebar">
+    <div class="sb-label">Herramientas</div>
+    <div id="sb-tabs"></div>
+    <div class="sb-spacer"></div>
+    <button class="sb-chat" onclick="toggleChat()">
+      <i class="ti ti-robot" aria-hidden="true"></i>
+      <span id="chat-lbl">Asistente IA</span>
+    </button>
+  </aside>
+
+  <div class="main-area">
+    <div class="content" id="content"></div>
+    <div class="chat-section" id="chat-section">
+      <div class="chat-head">
+        <svg viewBox="0 0 52 60" width="38" height="38" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="26" y1="8" x2="26" y2="2" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="26" cy="2" r="3" fill="#ec4899"/>
+          <rect x="10" y="8" width="32" height="24" rx="8" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+          <circle cx="20" cy="20" r="5" fill="#4f46e5"/><circle cx="32" cy="20" r="5" fill="#4f46e5"/>
+          <circle cx="21" cy="19" r="2" fill="#a5b4fc"/><circle cx="33" cy="19" r="2" fill="#a5b4fc"/>
+          <path d="M19 28 Q26 32 33 28" stroke="#818cf8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <rect x="23" y="32" width="6" height="5" fill="#312e81" rx="1"/>
+          <rect x="8" y="37" width="36" height="21" rx="8" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+          <circle cx="26" cy="47" r="5" fill="#312e81"/><circle cx="26" cy="47" r="2.5" fill="#6366f1"/>
+          <rect x="0" y="39" width="8" height="15" rx="4" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+          <rect x="44" y="39" width="8" height="15" rx="4" fill="#1e1b4b" stroke="#4f46e5" stroke-width="1"/>
+        </svg>
+        <div class="ch-info">
+          <h3>Asistente IA</h3>
+          <p><span class="gdot"></span>En línea · Búsqueda web activa</p>
+        </div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <div class="chat-in">
+        <input type="text" id="cinput" placeholder="Preguntame sobre herramientas de IA..." onkeydown="if(event.key==='Enter')send()">
+        <button class="snd" id="sbtn" onclick="send()" aria-label="Enviar"><i class="ti ti-send" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TABS=[
+  {id:'chat',label:'Chat & Texto',icon:'ti-message-circle',color:'#818cf8'},
+  {id:'images',label:'Imágenes',icon:'ti-photo',color:'#fb7185'},
+  {id:'music',label:'Música',icon:'ti-music',color:'#34d399'},
+  {id:'video',label:'Video',icon:'ti-video',color:'#fbbf24'},
+  {id:'code',label:'Código',icon:'ti-code',color:'#4ade80'},
+  {id:'agents',label:'Agentes & Bots',icon:'ti-robot',color:'#60a5fa'},
+  {id:'analytics',label:'Data Analytics',icon:'ti-chart-bar',color:'#f472b6'},
+];
+const P={
+  chat:[
+    {n:'Claude',u:'https://claude.ai',d:'IA conversacional de Anthropic',img:'claude.ai'},
+    {n:'ChatGPT',u:'https://chat.openai.com',d:'IA líder de OpenAI',img:'openai.com'},
+    {n:'Gemini',u:'https://gemini.google.com',d:'IA multimodal de Google',img:'google.com'},
+    {n:'DeepSeek',u:'https://chat.deepseek.com',d:'LLM open source de alto rendimiento',img:'deepseek.com'},
+    {n:'Qwen',u:'https://qwen.ai',d:'LLM de Alibaba Cloud',img:'qwen.ai'},
+    {n:'Mistral',u:'https://chat.mistral.ai',d:'IA europea de alto rendimiento',img:'mistral.ai'},
+    {n:'Copilot',u:'https://copilot.microsoft.com',d:'Asistente IA de Microsoft',img:'microsoft.com'},
+    {n:'Kimi',u:'https://kimi.moonshot.cn',d:'LLM de Moonshot AI',img:'moonshot.cn'},
+  ],
+  images:[
+    {n:'Midjourney',u:'https://midjourney.com',d:'Generación de imágenes premium',img:'midjourney.com'},
+    {n:'DALL·E',u:'https://labs.openai.com',d:'Imágenes generativas de OpenAI',img:'openai.com'},
+    {n:'Stable Diffusion',u:'https://stability.ai',d:'Generación open source',img:'stability.ai'},
+    {n:'Ideogram',u:'https://ideogram.ai',d:'Texto en imágenes con IA',img:'ideogram.ai'},
+    {n:'Adobe Firefly',u:'https://firefly.adobe.com',d:'IA generativa de Adobe',img:'adobe.com'},
+    {n:'Nano Banana',u:'https://nanobanana.ai',d:'Generación creativa de imágenes',img:'nanobanana.ai'},
+    {n:'Imagine AI',u:'https://imagine.art',d:'Arte e imágenes generativas',img:'imagine.art'},
+  ],
+  music:[
+    {n:'Suno',u:'https://suno.ai',d:'Genera canciones completas con IA',img:'suno.ai'},
+    {n:'Udio',u:'https://udio.com',d:'Composición musical con IA',img:'udio.com'},
+    {n:'Soundraw',u:'https://soundraw.io',d:'Música libre de derechos con IA',img:'soundraw.io'},
+    {n:'Mubert',u:'https://mubert.com',d:'Música generativa en tiempo real',img:'mubert.com'},
+  ],
+  video:[
+    {n:'Runway',u:'https://runwayml.com',d:'Generación y edición de video con IA',img:'runwayml.com'},
+    {n:'Sora',u:'https://sora.com',d:'Video generativo de OpenAI',img:'openai.com'},
+    {n:'Pika',u:'https://pika.art',d:'Video creativo con IA',img:'pika.art'},
+    {n:'Kling',u:'https://klingai.com',d:'Video de alta calidad con IA',img:'klingai.com'},
+    {n:'HeyGen',u:'https://heygen.com',d:'Avatares y videos con IA',img:'heygen.com'},
+    {n:'InVideo',u:'https://invideo.io',d:'Editor de video potenciado con IA',img:'invideo.io'},
+  ],
+  code:[
+    {n:'Cursor',u:'https://cursor.sh',d:'Editor de código con IA integrada',img:'cursor.sh'},
+    {n:'GitHub Copilot',u:'https://github.com/copilot',d:'Asistente de código de GitHub',img:'github.com'},
+    {n:'Replit',u:'https://replit.com',d:'IDE colaborativo en la nube',img:'replit.com'},
+    {n:'VS Code Web',u:'https://vscode.dev',d:'VS Code en el navegador',img:'vscode.dev'},
+    {n:'Bolt',u:'https://bolt.new',d:'Desarrollo full-stack con IA',img:'bolt.new'},
+    {n:'v0',u:'https://v0.dev',d:'UI generativa de Vercel',img:'v0.dev'},
+    {n:'Antigravity',u:'https://antigravity.ai',d:'Herramienta de código con IA',img:'antigravity.ai'},
+    {n:'AI Studio',u:'https://aistudio.google.com',d:'Studio de IA de Google',img:'google.com'},
+    {n:'Vercel',u:'https://vercel.com',d:'Deploy y hosting moderno',img:'vercel.com'},
+  ],
+  agents:[
+    {section:'Construcción de Agentes',icon:'ti-git-branch',items:[
+      {n:'N8N',u:'https://n8n.io',d:'Automatización de flujos open source',img:'n8n.io'},
+      {n:'Zapier',u:'https://zapier.com',d:'Integración entre aplicaciones',img:'zapier.com'},
+      {n:'Make',u:'https://make.com',d:'Automatización visual avanzada',img:'make.com'},
+      {n:'Flowise',u:'https://flowiseai.com',d:'Agentes LangChain visual',img:'flowiseai.com'},
+      {n:'LangFlow',u:'https://langflow.org',d:'Flujos de LLMs visuales',img:'langflow.org'},
+      {n:'Activepieces',u:'https://activepieces.com',d:'Automatización open source',img:'activepieces.com'},
+    ]},
+    {section:'Agentes Funcionales',icon:'ti-brain',items:[
+      {n:'Minimax',u:'https://minimaxi.com',d:'Agente multimodal avanzado',img:'minimaxi.com'},
+      {n:'Base44',u:'https://base44.com',d:'Plataforma de agentes IA',img:'base44.com'},
+      {n:'Emergent',u:'https://emergentmind.com',d:'Agentes autónomos con IA',img:'emergentmind.com'},
+      {n:'AgentGPT',u:'https://agentgpt.reworkd.ai',d:'Agente autónomo basado en GPT',img:'reworkd.ai'},
+      {n:'AutoGPT',u:'https://autogpt.net',d:'Agente IA autónomo pionero',img:'autogpt.net'},
+      {n:'CrewAI',u:'https://crewai.com',d:'Equipos de agentes coordinados',img:'crewai.com'},
+    ]},
+    {section:'Fabricación de Chatbots',icon:'ti-message-chatbot',items:[
+      {n:'BotExpress',u:'https://botexpress.com',d:'Framework abierto de chatbots',img:'botexpress.com'},
+      {n:'Voiceflow',u:'https://voiceflow.com',d:'Diseño de flujos conversacionales',img:'voiceflow.com'},
+      {n:'Botpress',u:'https://botpress.com',d:'Plataforma open source de bots',img:'botpress.com'},
+      {n:'ManyChat',u:'https://manychat.com',d:'Chatbots para redes sociales',img:'manychat.com'},
+      {n:'Tidio',u:'https://tidio.com',d:'Chat en vivo con IA integrada',img:'tidio.com'},
+      {n:'Landbot',u:'https://landbot.io',d:'Chatbots sin código visual',img:'landbot.io'},
+    ]},
+  ],
+  analytics:[
+    {n:'Power BI',u:'https://powerbi.microsoft.com',d:'Business Intelligence de Microsoft',img:'microsoft.com'},
+    {n:'Tableau',u:'https://tableau.com',d:'Visualización de datos líder global',img:'tableau.com'},
+    {n:'Looker Studio',u:'https://lookerstudio.google.com',d:'Reportes y dashboards de Google',img:'google.com'},
+    {n:'Raul',u:'https://raul.ai',d:'Analytics potenciado con IA',img:'raul.ai'},
+    {n:'Metabase',u:'https://metabase.com',d:'Business Intelligence open source',img:'metabase.com'},
+    {n:'Grafana',u:'https://grafana.com',d:'Observabilidad y dashboards',img:'grafana.com'},
+    {n:'Julius AI',u:'https://julius.ai',d:'Análisis con lenguaje natural',img:'julius.ai'},
+    {n:'Flourish',u:'https://flourish.studio',d:'Visualizaciones interactivas',img:'flourish.studio'},
+    {n:'RAWGraphs',u:'https://rawgraphs.io',d:'Gráficos complejos open source',img:'rawgraphs.io'},
+    {n:'DataWrapper',u:'https://datawrapper.de',d:'Gráficos para periodismo de datos',img:'datawrapper.de'},
+  ],
+};
+const ORBIT=[
+  {n:'ChatGPT',img:'openai.com'},{n:'Gemini',img:'google.com'},
+  {n:'Claude',img:'claude.ai'},{n:'DeepSeek',img:'deepseek.com'},
+  {n:'Midjourney',img:'midjourney.com'},{n:'Suno',img:'suno.ai'},
+  {n:'Copilot',img:'microsoft.com'},{n:'Runway',img:'runwayml.com'},
+];
+
+let activeTab='chat',chatOpen=false,isLoading=false;
+let hist=[{role:'assistant',content:'¡Hola! Soy tu guía de IA 🤖 Puedo ayudarte a elegir la herramienta ideal para cada tarea y buscar info actualizada. ¿En qué te ayudo hoy?'}];
+
+function init(){buildOrbit();buildSidebar();buildPanels();renderMsgs()}
+
+function buildOrbit(){
+  const c=document.getElementById('hero-right');
+  const cx=170,cy=150,r=125;
+  ORBIT.forEach((it,i)=>{
+    const a=(i/ORBIT.length)*Math.PI*2-Math.PI/2;
+    const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a);
+    const ini=(it.n.replace(/[^A-Za-z0-9]/g,'').substring(0,2)||it.n.substring(0,2)).toUpperCase();
+    const el=document.createElement('div');
+    el.className='orbit-item';
+    el.style.cssText=`left:${x}px;top:${y}px`;
+    el.innerHTML=`<div class="orbit-logo">
+      <span class="oi">${ini}</span>
+      <img src="https://logo.clearbit.com/${it.img}" alt="${it.n}"
+        onload="this.previousElementSibling.style.display='none'"
+        onerror="this.src='https://www.google.com/s2/favicons?domain=${it.img}&sz=64';this.onerror=null">
+    </div>
+    <span class="orbit-name">${it.n}</span>`;
+    c.appendChild(el);
+  });
+}
+
+function buildSidebar(){
+  document.getElementById('sb-tabs').innerHTML=TABS.map(t=>`
+    <button class="sb-tab${t.id===activeTab?' active':''}" style="--tc:${t.color}" onclick="switchTab('${t.id}')">
+      <i class="ti ${t.icon}" aria-hidden="true"></i>${t.label}
+    </button>`).join('');
+}
+
+function buildPanels(){
+  document.getElementById('content').innerHTML=TABS.map(t=>`
+    <div id="panel-${t.id}" class="tab-panel${t.id===activeTab?' active':''}">
+      ${buildContent(t)}
+    </div>`).join('');
+}
+
+function buildContent(t){
+  const d=P[t.id];
+  if(d&&d.length&&d[0].section!==undefined){
+    return d.map(s=>`
+      <div class="sec-hdr"><i class="ti ${s.icon}" aria-hidden="true"></i>${s.section}</div>
+      <div class="grid" style="margin-bottom:6px">${s.items.map(p=>card(p,t.color)).join('')}</div>
+    `).join('');
+  }
+  return`<div class="grid">${d.map(p=>card(p,t.color)).join('')}</div>`;
+}
+
+function card(p,color){
+  const ini=(p.n.replace(/[^A-Za-z0-9]/g,'').substring(0,2)||p.n.substring(0,2)).toUpperCase();
+  return`<a class="card" href="${p.u}" target="_blank" rel="noopener" style="--c:${color}"
+    onmouseover="this.style.borderColor='${color}55'" onmouseout="this.style.borderColor=''">
+    <div class="badge" style="background:${color}18;border:1px solid ${color}22">
+      <span class="init" style="color:${color}">${ini}</span>
+      <img src="https://logo.clearbit.com/${p.img}" alt="${p.n}" loading="lazy"
+        onload="this.previousElementSibling.style.display='none'"
+        onerror="this.src='https://www.google.com/s2/favicons?domain=${p.img}&sz=128';this.onerror=null">
+    </div>
+    <div class="card-name">${p.n}</div>
+    <div class="card-desc">${p.d}</div>
+  </a>`;
+}
+
+function switchTab(id){
+  document.querySelectorAll('.tab-panel').forEach(el=>el.classList.remove('active'));
+  const p=document.getElementById('panel-'+id);
+  if(p)p.classList.add('active');
+  activeTab=id;buildSidebar();
+}
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chat-section').style.display=chatOpen?'block':'none';
+  document.getElementById('chat-lbl').textContent=chatOpen?'Cerrar chat':'Asistente IA';
+  if(chatOpen)setTimeout(()=>{scrollM();document.getElementById('cinput').focus()},80);
+}
+
+function scrollM(){const el=document.getElementById('msgs');if(el)el.scrollTop=el.scrollHeight}
+
+function renderMsgs(){
+  const el=document.getElementById('msgs');
+  if(!el)return;
+  el.innerHTML=hist.map(m=>`
+    <div class="msg ${m.role==='user'?'u':'a'}">${esc(m.content||'').replace(/\n/g,'<br>')}</div>
+  `).join('');scrollM();
+}
+
+function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+async function send(){
+  const inp=document.getElementById('cinput'),btn=document.getElementById('sbtn');
+  const txt=inp.value.trim();
+  if(!txt||isLoading)return;
+  isLoading=true;btn.disabled=true;
+  hist.push({role:'user',content:txt});inp.value='';
+  renderMsgs();
+  document.getElementById('msgs').innerHTML+=`<div class="msg t"><div class="dots"><span></span><span></span><span></span></div>Buscando...</div>`;
+  scrollM();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Eres un asistente experto en herramientas de IA para estudiantes universitarios y profesionales no técnicos de América Latina. Ayudás a elegir las mejores plataformas. Sos claro, didáctico y respondés siempre en español.',
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:hist.map(h=>({role:h.role,content:h.content}))
+      })
+    });
+    const data=await res.json();
+    let reply=data.content?.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'No pude obtener respuesta.';
+    if(data.error)reply='Error: '+data.error.message;
+    hist.push({role:'assistant',content:reply});
+  }catch(e){hist.push({role:'assistant',content:'Error de conexión. Intentá de nuevo.'})}
+  isLoading=false;btn.disabled=false;renderMsgs();
+}
+
+init();
+</script>
+</body>
+</html>
